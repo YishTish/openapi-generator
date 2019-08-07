@@ -6,6 +6,9 @@
  * Once we start adding our own business logic, these
  * tests will fail. It is recommended to keep these tests updated with the code changes.
  */
+const fs = require('fs');
+const path = require('path');
+const FormData = require('form-data');
 const {
   describe, before, after, it,
 } = require('mocha');
@@ -143,5 +146,44 @@ describe('API tests, checking that the codegen generated code that allows all pa
         assert.fail(e.message);
       }
     });
+  });
+
+  const readFile = fileToRead => new Promise(
+    (resolve, reject) => {
+      try {
+        const fileContent = fs.createReadStream(fileToRead);
+        fileContent.on('end', function() {
+          resolve(fileContent);
+        });
+      } catch (e) {
+        reject(e);
+      }
+    },
+  );
+  it('should run a successful request with a file upload (based on petstore sample. Will not work on other openapi.yaml definition', async () => {
+    const url = `${config.FULL_PATH}/pet/0/uploadImage`;
+    try {
+      // const fileToUpload = fs.createReadStream(path.join(__dirname, 'testFiles', 'test.png'));
+      const additionalMetadata = 'some metadata about file';
+      const formData = new FormData();
+      const fileContent = fs.createReadStream(path.join(__dirname, 'testFiles', 'test.png'));
+
+      formData.append('additionalMetadata', additionalMetadata);
+      formData.append('file', fileContent);
+      const requestConfig = {
+        method: 'post',
+        url,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        data: formData,
+      };
+      const response = await axios(requestConfig);
+      response.should.have.property('status');
+      response.status.should.equal(200);
+    } catch (e) {
+      logger.error(`failed to call ${url}`)
+      assert.fail(e.message);
+    }
   });
 });

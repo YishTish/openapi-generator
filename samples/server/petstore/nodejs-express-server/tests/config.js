@@ -7,6 +7,6 @@ const config = {
   BASE_VERSION: 'v2',
 };
 config.OPENAPI_YAML = path.join(config.ROOT_DIR, 'api', 'openapi.yaml');
-config.FULL_PATH = `${config.URL_PATH}:${config.URL_PORT}/${config.BASE_VERSION}`;
+config.FULL_PATH = `${config.URL_PATH}:${config.URL_PORT}/api/${config.BASE_VERSION}`;
 
 module.exports = config;

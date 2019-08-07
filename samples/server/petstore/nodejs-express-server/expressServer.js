@@ -1,5 +1,3 @@
-// const { Middleware } = require('swagger-express-middleware');
-const path = require('path');
 const swaggerUI = require('swagger-ui-express');
 const yamljs = require('yamljs');
 const express = require('express');
@@ -20,15 +18,12 @@ class ExpressServer {
   }
 
   setupMiddleware() {
-    // this.setupAllowedMedia();
     this.app.use(cors());
     this.app.use(bodyParser.json());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(cookieParser());
-    this.app.use('/spec', express.static(path.join(__dirname, 'api')));
-    this.app.get('/hello', (req, res) => res.send('hello Yishai. path: '+this.openApiPath));
-    // this.app.get('/spec', express.static(this.openApiPath));
+    this.app.get('/spec', express.static(this.openApiPath));
     this.app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(this.schema));
     this.app.get('/login-redirect', (req, res) => {
       res.status(200);
